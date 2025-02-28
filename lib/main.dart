@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(CalculatorApp());
@@ -42,31 +43,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   String _evaluateExpression(String expression) {
     try {
-      List<String> tokens = expression.split(RegExp(r'([+\-*/])'));
-      if (tokens.length != 3) return 'Error';
-      double num1 = double.parse(tokens[0]);
-      double num2 = double.parse(tokens[2]);
-      String operator = tokens[1];
-      double output;
-
-      switch (operator) {
-        case '+':
-          output = num1 + num2;
-          break;
-        case '-':
-          output = num1 - num2;
-          break;
-        case '*':
-          output = num1 * num2;
-          break;
-        case '/':
-          if (num2 == 0) return 'Error';
-          output = num1 / num2;
-          break;
-        default:
-          return 'Error';
-      }
-      return output.toString();
+      Parser parser = Parser();
+      Expression exp = parser.parse(expression);
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      return eval.toStringAsFixed(2); // Ensures decimal precision
     } catch (e) {
       return 'Error';
     }
